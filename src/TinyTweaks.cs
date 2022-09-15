@@ -1,8 +1,8 @@
-﻿using Vintagestory.API.Client;
+﻿
+using Vintagestory.API.Client;
 using Vintagestory.API.Server;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
-using HarmonyLib;
 using System.Reflection;
 using Vintagestory.API.MathTools;
 
@@ -11,7 +11,6 @@ namespace tinytweaks.src
 {
     public class TinyTweaks : ModSystem
     {
-        private Harmony harmony;
         public ModConfig Config;
 
         public static WorldMapManager manager;
@@ -50,25 +49,12 @@ namespace tinytweaks.src
 
             base.Start(api);
 
-            if (Config.BreathingEnabled)
-            {
-                api.RegisterEntityBehaviorClass("air", typeof(EntityBehaviorAir));
-                harmony = new Harmony("com.madalchemist.tinytweaks");
-
-                harmony.PatchAll(Assembly.GetExecutingAssembly());
-            }
         }
 
 
         public override void StartClientSide(ICoreClientAPI api)
         {
             base.StartClientSide(api);
-
-            if (Config.BreathingEnabled)
-            {
-                HudElementAirBar airBar = new HudElementAirBar(api);
-                airBar.TryOpen();
-            }
 
             if (Config.AutoJumpWhenSprinting)
             {
@@ -93,11 +79,7 @@ namespace tinytweaks.src
 
         public override void Dispose()
         {
-            if (Config.BreathingEnabled)
-            {
-                harmony.UnpatchAll(harmony.Id);
-            }
-            base.Dispose();
+
         }
 
         
@@ -112,6 +94,7 @@ namespace tinytweaks.src
             waypoint.OwningPlayerUid = p.PlayerUID;
             waypoint.Icon = "circle";
             waypoint.Color = -65536;
+            waypoint.Pinned = true;
 
             WorldMapManagerExtensions.AddWaypointToPlayer(manager, waypoint, p);
         }
